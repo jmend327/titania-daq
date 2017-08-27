@@ -8,7 +8,8 @@
 # March 2017
 
 # ## Preface
-# When calling script from bash, include filename and the times that the UV light was turned on and when reduction stopped, in the following format. Please follow it exactly, punctuation and spaces and all: 
+# When calling script from bash, include filename and the times that the UV light was 
+# turned on and when reduction stopped, in the following format. Please follow it exactly, punctuation and spaces and all: 
 # 
 # \>> python PostExperimentDataAnalysis.py 'experimentdata.csv' '2:30PM-2:55PM' '3:15PM-3:43PM'
 
@@ -18,11 +19,10 @@
 
 
 import sys
-import pandas as pd
 import csv
 import matplotlib.pyplot as plt
-get_ipython().magic('matplotlib inline')
-import datetime as dt   #https://docs.python.org/3/library/datetime.html
+#get_ipython().magic('matplotlib inline')
+import datetime as dt
 import seaborn as sns
 import os
 import plotly
@@ -246,24 +246,4 @@ for exp in exps:
     pylab.savefig('/Users/Owner/Google Drive/Titania/Data/plots/'+save_filename)
     
     plt.show()
-
-
-# ## C. Save results
-
-# In[36]:
-
-
-# Create file with all relevant information
-
-
-# In[37]:
-
-
-# Move products to appropriate directory
-
-
-# In[38]:
-
-
-# Upload data to s3
 
