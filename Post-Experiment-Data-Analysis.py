@@ -4,8 +4,8 @@
 # # Titania Coatings - Post-Experiment Data Analysis
 # This program is to take in data collected by the DAQ unit and output the results of that data, including plots and reductions
 # 
-# Jesse Mendoza   
-# March 2017
+# Jesse Mendoza
+# edited August 2017
 
 # ## Preface
 # When calling script from bash, include filename and the times that the UV light was 
@@ -13,12 +13,134 @@
 # 
 # \>> python PostExperimentDataAnalysis.py 'experimentdata.csv' '2:30PM-2:55PM' '3:15PM-3:43PM'
 
-# ## A. Retrieve and set-up data
-
-# In[27]:
 
 
-import sys
+
+import csv
+import datetime as dt
+
+
+class Experiment:
+	def __init__(self):
+		self.header_size=8
+		# margin = number of minutes to add before and after exp times
+		self.margin = 1
+		self.exp = {}
+		self.exp['duration'] = []
+		self.exp['no_ppb'] = []
+		self.exp['nox_ppb'] = []
+
+
+	def get_dataset(self, file_name):
+		dataset = list(csv.reader(open(file_name,'r')))
+		return dataset
+
+	def format_dataset(self, listed_dataset, exp_times):
+		listed_dataset = self.remove_headers(listed_dataset)
+
+		# Raw DAQ ---> formatted datetime ---> filter ---> duration
+		for row in listed_dataset:
+			row[1] = self.transform_to_datetime(row[1])
+
+		filtered_dataset = list(self.filter_dataset(listed_dataset, exp_times))
+		filtered_dataset = list(self.get_duration(filtered_dataset))
+		for row in filtered_dataset:
+			print row[1]
+
+	def remove_headers(self, dataset):
+		return dataset[self.header_size:]
+
+	def transform_to_datetime(self, datetime_string):
+		split_dt_row = datetime_string.split(' ')
+		split_dt_time = split_dt_row[1].split('.')
+		formatted_time = dt.datetime.strptime(split_dt_time[0]+' '+split_dt_row[2],'%I:%M:%S %p')
+		return formatted_time
+
+	def filter_dataset(self, dataset, exp_times):
+		start_time = exp_times.split("-")[0]
+		end_time = exp_times.split("-")[1]
+
+		formatted_start_time = dt.datetime.strptime(start_time,'%I:%M%p')
+		formatted_end_time = dt.datetime.strptime(end_time,'%I:%M%p')
+
+		margin = dt.timedelta(minutes=self.margin)
+		for row in dataset:
+			if (row[1] > (formatted_start_time-margin)) and (row[1] < (formatted_end_time+margin)):
+				yield row
+
+	def get_duration(self, dataset):
+		start_time = dataset[0][1]
+		print "START TIME",start_time
+		for row in dataset:
+			diff = row[1] - start_time
+			print diff, type(diff)
+			#yield diff.minute + diff.second/60
+
+
+	def run(self, datafile, exp_times):
+		dataset = self.get_dataset(datafile)
+		self.exp['raw_data'] = dataset
+
+		formatted_dataset = self.format_dataset(dataset, exp_times)
+
+
+
+
+def main():
+	print "\nHello, welcome to the Post-Experiment-Data-Analysis! Press Ctrl+C to exit anytime.\n"
+	#datafile = raw_input("Raw DAQ data filename (in csv format): ")
+	datafile = '1-19-17 CE-CERT.csv'
+	'''exp_times_list = []
+	exp_time = ''
+	count = 1
+	while exp_time != 'done':
+		exp_time = raw_input("Reduction times of exp {}? Use format 1:30PM-1:50PM or 'done': ".format(count))
+		exp_times_list.append(exp_time)
+		count += 1'''
+	exp_times_list = ['2:14PM-2:32PM']#,'3:09PM-3:22PM','3:51PM-4:05PM']
+
+	for exp_times in exp_times_list:
+		exp = Experiment().run(datafile,exp_times)
+
+
+if __name__ == '__main__':
+	main()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+'''import sys
 import csv
 import matplotlib.pyplot as plt
 #get_ipython().magic('matplotlib inline')
@@ -29,35 +151,6 @@ import plotly
 import pylab
 import matplotlib.text as t
 
-
-# In[28]:
-
-
-# Get file and its data and prepare for pandas dataframe
-
-#filename = sys.argv[1]
-#filename = '1-19-17 CE-CERT.csv'
-filename = 'Titania 5-10 Ferro(5) 50-50.csv'
-header_size=8
-
-
-def data_no_header(filename,header_size):
-    dataset = open(filename,'r')
-    dataset = list(csv.reader(dataset))
-    dataset = dataset[header_size:]
-    return dataset
-
-
-dataset = pd.DataFrame(data_no_header(filename,header_size),columns =['Sample Number','Date&Time','NOx','NO','Events'])
-
-print(dataset.head(3))
-
-
-# In[29]:
-
-
-# Convert Date&Time string to datetime object
-#https://docs.python.org/3/library/datetime.html#strftime-and-strptime-behavior
 
 
 def conv_daq_to_datetime_format(dt_row):
@@ -154,7 +247,7 @@ print(dataset['conv_NO_smooth'][25:35])
 
 class Experiments():
     #Creates instance for each experiment
-    '''
+
     methods:
     self.name
     self.ss1
@@ -164,7 +257,7 @@ class Experiments():
     self.no/x_max
     self.no/x_min
     self.no/x_reduction
-    '''
+
     
     def __init__(self):
         #self.name = name
@@ -245,5 +338,5 @@ for exp in exps:
     save_filename = str(start_dt[0:10]+'_'+exp.name).replace('/','-')
     pylab.savefig('/Users/Owner/Google Drive/Titania/Data/plots/'+save_filename)
     
-    plt.show()
+    plt.show()'''
 
