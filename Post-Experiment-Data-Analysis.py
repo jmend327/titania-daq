@@ -41,11 +41,10 @@ class Experiment:
 		# Raw DAQ ---> formatted datetime ---> filter ---> duration
 		for row in listed_dataset:
 			row[1] = self.transform_to_datetime(row[1])
-
-		filtered_dataset = list(self.filter_dataset(listed_dataset, exp_times))
-		filtered_dataset = list(self.get_duration(filtered_dataset))
-		for row in filtered_dataset:
-			print row[1]
+			if self.filter_dataset(row[1], exp_times) == True:
+				self.exp['duration'].append(self.get_duration(row[1]))
+				self.exp['no_ppb'].append(self.conv_no_v_to_ppb(row[2]))
+				self.exp['nox_ppb'].append(self.conv_nox_v_to_ppb(row[3]))
 
 	def remove_headers(self, dataset):
 		return dataset[self.header_size:]
@@ -56,7 +55,7 @@ class Experiment:
 		formatted_time = dt.datetime.strptime(split_dt_time[0]+' '+split_dt_row[2],'%I:%M:%S %p')
 		return formatted_time
 
-	def filter_dataset(self, dataset, exp_times):
+	def filter_dataset(self, formatted_dt, exp_times):
 		start_time = exp_times.split("-")[0]
 		end_time = exp_times.split("-")[1]
 
@@ -64,24 +63,31 @@ class Experiment:
 		formatted_end_time = dt.datetime.strptime(end_time,'%I:%M%p')
 
 		margin = dt.timedelta(minutes=self.margin)
-		for row in dataset:
-			if (row[1] > (formatted_start_time-margin)) and (row[1] < (formatted_end_time+margin)):
-				yield row
 
-	def get_duration(self, dataset):
-		start_time = dataset[0][1]
-		print "START TIME",start_time
-		for row in dataset:
-			diff = row[1] - start_time
-			print diff, type(diff)
-			#yield diff.minute + diff.second/60
+		self.exp['start_time'] = formatted_start_time - margin
+		self.exp['end_time'] = formatted_end_time + margin
+
+		if (formatted_dt > (formatted_start_time-margin)) and (formatted_dt < (formatted_end_time+margin)):
+			return True
+		else:
+			return False
+
+	def get_duration(self, formatted_dt):
+		diff = formatted_dt - self.exp['start_time']
+		return round(float(diff.seconds)/60,2)
+
+	def conv_no_v_to_ppb(self, no_voltage):
+		return 99.437*float(no_voltage) - 7.5526
+
+	def conv_nox_v_to_ppb(self, nox_voltage):
+		return 99.626*float(nox_voltage) + 0.66
 
 
 	def run(self, datafile, exp_times):
-		dataset = self.get_dataset(datafile)
-		self.exp['raw_data'] = dataset
-
-		formatted_dataset = self.format_dataset(dataset, exp_times)
+		self.exp['raw_data'] = self.get_dataset(datafile)
+		self.format_dataset(self.exp['raw_data'], exp_times)
+		for i,row in enumerate(self.exp['duration']):
+			print row,'\t', self.exp['no_ppb'][i], '\t',self.exp['nox_ppb'][i]
 
 
 
