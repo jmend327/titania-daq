@@ -10,6 +10,7 @@ import datetime as dt
 import matplotlib.pyplot as plt
 import pylab
 import pandas as pd
+import urllib2
 
 class Experiment:
 	def __init__(self):
@@ -97,6 +98,7 @@ class Experiment:
 		return self
 
 
+
 class Plot:
 	def __init__(self, exp):
 		self.exp = exp
@@ -125,8 +127,24 @@ class Plot:
 	def run(self):
 		self.plot()
 
-def index_to_elasticsearch():
-	pass
+
+
+class Elasticsearch:
+	def __init__(self, exp_json):
+		pass
+
+	def format_date(self, date_string):
+		pass
+
+	def format_time(self, time_string):
+		pass
+
+	def index_to_elasticsearch(self, json_body):
+		pass
+
+	def run(self):
+		pass
+
 
 
 def main():
