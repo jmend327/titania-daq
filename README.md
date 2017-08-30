@@ -10,3 +10,5 @@ The following can be tweaked by the user for further customization:
 * `self.margin` in `Experiment.init`
 * `self.rolling_avg_window` in `Experiment.init`
 * all of the plotting parameters in `Plot.init`
+
+You can run the `test.sh` shell script to try out this program. It should ingest the csv file in the `test` folder and use the input in `input.txt`, then display 2 plots.
