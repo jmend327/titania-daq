@@ -57,6 +57,7 @@ class Experiment:
 		start_margin = margin + dt.timedelta(seconds=self.rolling_avg_window)
 
 		self.start_time = formatted_start_time - margin
+		self.pretty_start_time = self.start_time.strftime("%I:%M %p")
 		self.end_time = formatted_end_time + margin
 
 		if (formatted_dt>(formatted_start_time-start_margin)) and (formatted_dt<(formatted_end_time+margin)):
@@ -98,12 +99,14 @@ class Experiment:
 
 class Plot:
 	def __init__(self, exp):
-		pretty_start_time = exp.start_time.strftime("%I:%M %p")
-		start_dt = exp.date + ', ' + pretty_start_time
+		self.exp = exp
+
+	def plot(self):
+		start_dt = self.exp.date + ', ' + self.exp.pretty_start_time
 		plt.title('NOx Reduction Experiment\n'+ start_dt)
 
-		no=plt.plot(exp.duration, exp.no_ppb_smooth,label='NO')
-		nox=plt.plot(exp.duration, exp.nox_ppb_smooth, label='NOx', color='r', linestyle='--')
+		no=plt.plot(self.exp.duration, self.exp.no_ppb_smooth,label='NO')
+		nox=plt.plot(self.exp.duration, self.exp.nox_ppb_smooth, label='NOx', color='r', linestyle='--')
 
 		plt.xlabel('Duration (min)',size=12)
 		plt.ylabel('Concentration (ppb)',fontsize=12)
@@ -111,31 +114,32 @@ class Plot:
 		plt.legend(loc='best')
 
 		plt.figtext(0.76,0.72,'Reductions', weight='bold')
-		plt.figtext(0.76,0.68,'NO: {}%'.format(round(exp.no_reduction*100,1)))
-		plt.figtext(0.76,0.64,'NOx: {}%'.format(round(exp.nox_reduction*100,1)))
+		plt.figtext(0.76,0.68,'NO: {}%'.format(round(self.exp.no_reduction*100,1)))
+		plt.figtext(0.76,0.64,'NOx: {}%'.format(round(self.exp.nox_reduction*100,1)))
 
-		save_filename = "{}_{}".format(str(exp.date).replace('/','-'), pretty_start_time)
-		pylab.savefig(save_filename)
+		'''save_filename = "{}_{}".format(str(self.exp.date).replace('/','-'), self.exp.pretty_start_time)
+		pylab.savefig(save_filename)'''
 
 		plt.show()
 
+	def run(self):
+		self.plot()
+
 
 def main():
-	print "\nWelcome to the Post-Experiment-Data-Analysis! Press Ctrl+C to exit anytime.\n"
-	#datafile = raw_input("Raw DAQ data filename (in csv format): ")
-	datafile = '1-19-17 CE-CERT.csv'
-	'''exp_times_list = []
-	exp_time = ''
-	count = 1
-	while exp_time != 'done':
-		exp_time = raw_input("Reduction times of exp {}? Use format 1:30PM-1:50PM or 'done': ".format(count))
+	print "\nWelcome to the Post-Experiment-Data-Analysis!\n"
+	datafile = raw_input("Raw DAQ data filename (in .csv format): ")
+	num_experiments = input("Number of experiments: ")
+	print "\nPlease enter reduction times using format '1:30PM-1:50PM'"
+
+	exp_times_list = []
+	for i in range(1,num_experiments+1):
+		exp_time = raw_input("Reduction times of exp {}: ".format(i))
 		exp_times_list.append(exp_time)
-		count += 1'''
-	exp_times_list = ['2:16PM-2:20PM']#,'3:09PM-3:22PM','3:51PM-3:58PM']
 
 	for exp_times in exp_times_list:
 		exp = Experiment().run(datafile,exp_times)
-		Plot(exp)
+		Plot(exp).run()
 
 
 if __name__ == '__main__':
