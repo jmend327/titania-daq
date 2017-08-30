@@ -1,5 +1,5 @@
 # Post-Experiment-Data-Analysis
-This script is intended for the Titania Coatings group to ingest raw voltage data from the DAQ unit and create a plot with concentrations in ppb. The libraries/packages in the dependencies section __must__ be installed before running this script.
+This script is intended for the Titania Coatings group to ingest raw voltage data from the DAQ unit and create a plot with concentrations in ppb. The libraries/packages in the __Dependencies__ section must be installed before running this script.
 
 ## Dependencies
 * [matplotlib](https://matplotlib.org/)
