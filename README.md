@@ -7,6 +7,6 @@ This script is intended for the Titania Coatings group to ingest raw voltage dat
 
 ## Customization
 The following can be tweaked by the user for further customization:
-* `<self.margin>` in `<Experiment.init>`
-* `<self.rolling_avg_window>` in `<Experiment.init>`
-* all of the plotting parameters in `<Plot.init>`
+* `self.margin` in `Experiment.init`
+* `self.rolling_avg_window` in `Experiment.init`
+* all of the plotting parameters in `Plot.init`
