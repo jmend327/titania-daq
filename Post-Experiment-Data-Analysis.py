@@ -15,6 +15,7 @@ import urllib2
 '''
 TODO:
 Figure out how to handle date/time formats for elasticsearch
+Index to elasticsearch
 '''
 
 class Experiment:
@@ -174,15 +175,21 @@ class Elasticsearch:
         }
         return time_json
 
-    def index_to_elasticsearch(self, json_body):
+    def construct_url(self, params):
         pass
+
+    def execute_rest_call(self, url, method, json_data):
+        opener = urllib2.build_opener(urllib2.HTTPHandler)
+        request = urllib2.Request(url, data=json.dumps(json_data))
+        request.add_header('Content-Type', 'application/json')
+        request.get_method = lambda: method
+        url = opener.open(request)
+        response = url.read()
+        return response
 
     def run(self):
         pass
 
-def test(inp):
-    if inp == "testfile":
-        return
 
 def main():
     print "\nWelcome to the Post-Experiment-Data-Analysis!\n"
