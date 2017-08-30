@@ -125,6 +125,9 @@ class Plot:
 	def run(self):
 		self.plot()
 
+def index_to_elasticsearch():
+	pass
+
 
 def main():
 	print "\nWelcome to the Post-Experiment-Data-Analysis!\n"
