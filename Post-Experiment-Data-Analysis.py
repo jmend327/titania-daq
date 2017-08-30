@@ -12,6 +12,11 @@ import pylab
 import pandas as pd
 import urllib2
 
+'''
+TODO:
+Figure out how to handle date/time formats for elasticsearch
+'''
+
 class Experiment:
 	def __init__(self):
 		self.header_size=8
@@ -95,6 +100,8 @@ class Experiment:
 				self.nox_ppb_raw.append(self.conv_nox_v_to_ppb(row[3]))
 		self.smooth_ppb()
 		self.reductions()
+		print self.date
+		print self.pretty_start_time
 		return self
 
 
@@ -131,13 +138,41 @@ class Plot:
 
 class Elasticsearch:
 	def __init__(self, exp_json):
-		pass
+		self.exp = exp_json
+		self.host = 'localhost'
+		self.port = '9200'
+		self.index = 'exp_data'
+		self.doc_type = 'exp'
 
 	def format_date(self, date_string):
-		pass
+		date_json = {
+		  "mappings": {
+		    "my_type": {
+		      "properties": {
+		        "date": {
+		          "type":   "date",
+		          "format": "MM/dd/yyyy"
+		        }
+		      }
+		    }
+		  }
+		}
+		return date_json
 
 	def format_time(self, time_string):
-		pass
+		time_json = {
+		  "mappings": {
+		    "my_type": {
+		      "properties": {
+		        "time": {
+		          "type":   "hour_minute",
+		          "format": "HH:mm"
+		        }
+		      }
+		    }
+		  }
+		}
+		return time_json
 
 	def index_to_elasticsearch(self, json_body):
 		pass
@@ -145,7 +180,9 @@ class Elasticsearch:
 	def run(self):
 		pass
 
-
+def test(inp):
+	if inp == "testfile":
+		return
 
 def main():
 	print "\nWelcome to the Post-Experiment-Data-Analysis!\n"
