@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 import pylab
 import pandas as pd
 import urllib2
+import matplotlib
 
 '''
 TODO:
@@ -122,6 +123,7 @@ class Plot:
         plt.ylabel('Concentration (ppb)',fontsize=12)
 
         plt.legend(loc='best')
+        #plt.grid(color='grey', linewidth=0.5)
 
         plt.figtext(0.76,0.72,'Reductions', weight='bold')
         plt.figtext(0.76,0.68,'NO: {}%'.format(round(self.exp.no_reduction*100,1)))
